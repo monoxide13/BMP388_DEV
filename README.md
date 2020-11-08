@@ -38,6 +38,7 @@ This BMP388_DEV library offers the following features:
 <a name="version"></a>
 ## __Version__
 
+- Version 1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 - Version 1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
 - Version 1.0.1 -- Fix uninitialised structures, thanks to David Jade for investigating and flagging up this issue
 - Version 1.0.0 -- Intial version
