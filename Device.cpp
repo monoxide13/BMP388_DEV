@@ -6,6 +6,7 @@
 	V1.0.0 -- Initial release
 	V1.0.1 -- Modification to allow user-defined pins for I2C operation on the ESP8266
 	V1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
+	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -137,7 +138,7 @@ void Device::writeByte(uint8_t subAddress, uint8_t data)
 
 uint8_t Device::readByte(uint8_t subAddress)												// Read a byte from the sub-address using I2C
 {
-  uint8_t data;
+  uint8_t data = 0x00;
 	if (comms == I2C_COMMS)																		
 	{
 		Wire.beginTransmission(address);         
