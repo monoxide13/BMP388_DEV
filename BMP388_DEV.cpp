@@ -6,6 +6,7 @@
 	V1.0.0 -- Initial release 	
 	V1.0.1 -- Fix uninitialised structures, thanks to David Jade for investigating and flagging up this issue
 	V1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
+	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
