@@ -7,7 +7,7 @@ An Arduino compatible, non-blocking, I2C/SPI library for the Bosch BMP388 barome
 
 This BMP388_DEV library offers the following features:
 
-- Returns temperature in degrees celius (**°C**), pressure in hectoPascals/millibar (**hPa**) and altitude in metres (**m**)
+- Returns temperature in degrees celcius (**°C**), pressure in hectoPascals/millibar (**hPa**) and altitude in metres (**m**)
 - NORMAL or FORCED modes of operation
 - I2C or hardware SPI communications with configurable clock rates
 - Non-blocking operation 
@@ -192,7 +192,7 @@ bmp388.stopConversion();	// Stop conversion and return to SLEEP_MODE
 <a name="results_acquisition"></a>
 ### __Results Acquisition__
 
-The BMP388 barometer library acquires temperature in degrees celius (**°C**), pressure in hectoPascals/millibar (**hPa**) and altitude in metres (**m**). The acquisition functions scan the BMP388's status register and return 1 if the barometer results are ready and have been successfully read, 0 if they are not; this allows for non-blocking code implementation. The temperature, pressure and altitude results themselves are _float_ variables by passed reference to the function and are updated upon a successful read.
+The BMP388 barometer library acquires temperature in degrees celcius (**°C**), pressure in hectoPascals/millibar (**hPa**) and altitude in metres (**m**). The acquisition functions scan the BMP388's status register and return 1 if the barometer results are ready and have been successfully read, 0 if they are not; this allows for non-blocking code implementation. The temperature, pressure and altitude results themselves are _float_ variables by passed reference to the function and are updated upon a successful read.
 
 Here are the results acquisition functions:
 
