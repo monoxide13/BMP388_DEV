@@ -37,7 +37,8 @@
 
 #define BMP388_I2C_ADDR		 		0x77				// The BMP388 I2C address
 #define BMP388_I2C_ALT_ADDR 	0x76				// The BMP388 I2C alternate address
-#define DEVICE_ID 						0x50				// The BMP388 device ID
+#define BMP388_ID 						0x50				// The BMP388 device ID
+#define BMP390_ID							0x60				// The BMP390 device ID
 #define RESET_CODE						0xB6				// The BMP388 reset code
 #define FIFO_FLUSH						0xB0				// The BMP388 flush FIFO code
 
