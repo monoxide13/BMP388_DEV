@@ -56,10 +56,13 @@ uint8_t BMP388_DEV::begin(Mode mode, 																// Initialise BMP388 device
 	{		
 		return 0;																												// If unable to reset return 0
 	}
-	if (readByte(BMP388_CHIP_ID) != DEVICE_ID)             						// Check the device ID
+	
+	byte chipId = readByte(BMP388_CHIP_ID);														// Read the device ID	
+	if (chipId != BMP388_ID && chipId != BMP390_ID)             			// Check the device ID
   {  
 		return 0;                                                     	// If the ID is incorrect return 0
   }	 
+	
   readBytes(BMP388_TRIM_PARAMS, (uint8_t*)&params, sizeof(params)); // Read the trim parameters into the params structure
 	floatParams.param_T1 = (float)params.param_T1 / powf(2.0f, -8.0f); // Calculate the floating point trim parameters
 	floatParams.param_T2 = (float)params.param_T2 / powf(2.0f, 30.0f);
