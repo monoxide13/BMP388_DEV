@@ -59,7 +59,7 @@ class Device{
 		Device(uint8_t cs, uint8_t spiPort, SPIClass& spiClass);		// Device object for ESP32 HSPI operation with supplied SPI object
 #endif		
 		void setClock(uint32_t clockSpeed);													// Set the I2C/SPI clock speed
-#ifndef ARDUINO_ARCH_ESP32
+#if !defined ARDUINO_ARCH_ESP8266 && !defined ARDUINO_ARCH_ESP32
 		void usingInterrupt(uint8_t pinNumber);											// Wrapper for the SPI.usingInterrupt() function
 		void notUsingInterrupt(uint8_t pinNumber);									// Wrapper for the SPI.notUsingInterrupt() function
 #endif
