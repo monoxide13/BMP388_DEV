@@ -7,6 +7,8 @@
 	V1.0.1 -- Fix uninitialised structures, thanks to David Jade for investigating and flagging up this issue
 	V1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
 	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
+	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
+	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -96,12 +98,11 @@ enum Mode {
 
 enum Oversampling {
 	OVERSAMPLING_SKIP 		 = 0x00,     			// Oversampling bit fields in the control and measurement register
-	OVERSAMPLING_X1   		 = 0x01,
-	OVERSAMPLING_X2   		 = 0x02,
-	OVERSAMPLING_X4  		   = 0x03,
-	OVERSAMPLING_X8    		 = 0x04,
-	OVERSAMPLING_X16   	 	 = 0x05,
-	OVERSAMPLING_X32   	 	 = 0x06
+	OVERSAMPLING_X2   		 = 0x01,
+	OVERSAMPLING_X4  		   = 0x02,
+	OVERSAMPLING_X8    		 = 0x03,
+	OVERSAMPLING_X16   	 	 = 0x04,
+	OVERSAMPLING_X32   	 	 = 0x05
 };
 
 enum IIRFilter {
