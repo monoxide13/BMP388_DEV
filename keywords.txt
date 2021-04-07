@@ -51,6 +51,8 @@ getSensorTime	KEYWORD2
 enableI2CWatchdog KEYWORD2
 disableI2CWatchdog KEYWORD2
 setI2CWatchdogTimeout KEYWORD2
+getErrorReg	KEYWORD2
+getStatusReg	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
