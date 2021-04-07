@@ -9,6 +9,7 @@
 	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
 	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
+	V1.0.6 -- Include getErrorReg() and getStatusReg() functions
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -274,6 +275,8 @@ class BMP388_DEV : public Device {															// Derive the BMP388_DEV class 
 		void enableI2CWatchdog();																		// Enable the I2C watchdog timer
 		void disableI2CWatchdog();																	// Disable the I2C watchdog timer
 		void setI2CWatchdogTimout(WatchdogTimout watchdogTimeout);	// Set the watchdog time-out: 1.25ms or 40ms 
+		uint8_t getErrorReg();																			// Read the error register
+		uint8_t getStatusReg();																			// Read the status register
 	protected:
 	private:
 		void setMode(Mode mode);																		// Set the barometer mode
@@ -333,7 +336,7 @@ class BMP388_DEV : public Device {															// Derive the BMP388_DEV class 
 			uint8_t reg;
 		} chip_id = { .reg = 0 };
 				
-		union {																											// Copy of the BMP388's error register
+		/*union {																											// Copy of the BMP388's error register
 			struct {
 				uint8_t fatal_err : 1;
 				uint8_t cmd_err		: 1;
@@ -341,6 +344,16 @@ class BMP388_DEV : public Device {															// Derive the BMP388_DEV class 
 			} bit;
 			uint8_t reg;
 		} err_reg = { .reg = 0 };
+			
+		union {																											// Copy of the BMP388's status register
+			struct {
+				uint8_t 					: 4;
+				uint8_t cmd_rdy 	: 1;
+				uint8_t press_rdy	: 1;
+				uint8_t temp_rdy 	: 1;
+			} bit;
+			uint8_t reg;
+		} status = { .reg = 0 };*/
 			
 		union {																											// Copy of the BMP388's event register
 			struct {
