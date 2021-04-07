@@ -38,6 +38,7 @@ This BMP388_DEV library offers the following features:
 <a name="version"></a>
 ## __Version__
 
+- Version 1.0.6 -- Include getErrorReg() and getStatusReg() functions
 - Version 1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
 - Version 1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
 - Version 1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
