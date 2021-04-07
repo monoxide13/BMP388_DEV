@@ -9,6 +9,7 @@
 	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
 	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
+	V1.0.6 -- Include getErrorReg() and getStatusReg() functions
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -431,6 +432,16 @@ void BMP388_DEV::setI2CWatchdogTimout(WatchdogTimout watchdogTimeout)		// Set th
 {
 	if_conf.bit.i2c_wdt_sel = watchdogTimeout;
 	writeByte(BMP388_IF_CONFIG, if_conf.reg);
+}
+
+uint8_t BMP388_DEV::getErrorReg()																		// Read the error register
+{
+	return readByte(BMP388_ERR_REG);
+}
+
+uint8_t BMP388_DEV::getStatusReg()																	// Read the status register
+{
+	return readByte(BMP388_STATUS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
