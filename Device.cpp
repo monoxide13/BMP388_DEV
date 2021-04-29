@@ -9,6 +9,7 @@
 	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
 	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
 	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
+	V1.0.6 -- Fix compilation issue with Arduino Due
 	
 	The MIT License (MIT)
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61,7 +62,7 @@ void Device::setClock(uint32_t clockSpeed)													// Set the I2C or SPI clo
 	}
 }
 
-#if !defined ARDUINO_ARCH_ESP8266 && !defined ARDUINO_ARCH_ESP32
+#if !defined ARDUINO_ARCH_ESP8266 && !defined ARDUINO_ARCH_ESP32 && !defined ARDUINO_SAM_DUE
 void Device::usingInterrupt(uint8_t pinNumber)											// Wrapper for the SPI usingInterrupt() function
 {
 	spi->usingInterrupt(pinNumber);
