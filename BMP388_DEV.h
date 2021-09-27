@@ -1,52 +1,22 @@
-/*
-  BMP388_DEV is an I2C/SPI compatible library for the Bosch BMP388 barometer.
-	
-	Copyright (C) Martin Lindupp 2020
-	
-	V1.0.0 -- Initial release 		
-	V1.0.1 -- Fix uninitialised structures, thanks to David Jade for investigating and flagging up this issue
-	V1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
-	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
-	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
-	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
-	V1.0.6 -- Include getErrorReg() and getStatusReg() functions
-	V1.0.7 -- Fix compilation issue with Arduino Due
-	
-	The MIT License (MIT)
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-*/
+/* BMP388_DEV.h */
 
 #ifndef BMP388_DEV_h
 #define BMP388_DEV_h
-
-#include <Device.h>
+#include <SPI.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // BMP388_DEV Definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-#define BMP388_I2C_ADDR		 		0x77				// The BMP388 I2C address
-#define BMP388_I2C_ALT_ADDR 	0x76				// The BMP388 I2C alternate address
 #define BMP388_ID 						0x50				// The BMP388 device ID
-#define BMP390_ID							0x60				// The BMP390 device ID
+#define BMP390_ID						0x60				// The BMP390 device ID
 #define RESET_CODE						0xB6				// The BMP388 reset code
 #define FIFO_FLUSH						0xB0				// The BMP388 flush FIFO code
+#define READ_MASK						0x80
+#define WRITE_MASK						0x7F
 
-enum SPIPort { BMP388_SPI0, BMP388_SPI1 };
+// SPI rated to 10MHz
+#define BMP388_CLOCK_SPEED 10000000
 
 ////////////////////////////////////////////////////////////////////////////////
 // BMP388_DEV Registers
@@ -205,24 +175,15 @@ enum WatchdogTimout {											// I2C watchdog time-out
 // BMP388_DEV Class declaration
 ////////////////////////////////////////////////////////////////////////////////
 
-class BMP388_DEV : public Device {															// Derive the BMP388_DEV class from the Device class
+class BMP388_DEV {															// Derive the BMP388_DEV class from the Device class
 	public:
-		BMP388_DEV();																								// BMP388_DEV object for I2C operation
-#ifdef ARDUINO_ARCH_ESP8266
-		BMP388_DEV(uint8_t sda, uint8_t scl);												// BMP388_DEV object for ESP8266 I2C operation with user-defined pins
-#endif
 		BMP388_DEV(uint8_t cs);																			// BMP388_DEV object for SPI operation
-#ifdef ARDUINO_ARCH_ESP32
-		BMP388_DEV(uint8_t sda, uint8_t scl);												// BMP388_DEV object for ESP32 I2C operation with user-defined pins
-		BMP388_DEV(uint8_t cs, uint8_t spiPort, SPIClass& spiClass);	// BMP388_DEV object for SPI1 with supplied SPIClass object
-#endif
+		BMP388_DEV(uint8_t cs, SPIClass* spc);	// BMP388_DEV object for SPI1 with supplied SPIClass object
 		uint8_t begin(Mode mode = SLEEP_MODE, 												// Initialise the barometer with arguments
 									Oversampling presOversampling = OVERSAMPLING_X16, 
 									Oversampling tempOversampling = OVERSAMPLING_X2, 
 									IIRFilter iirFilter = IIR_FILTER_OFF, 
 									TimeStandby timeStandby = TIME_STANDBY_5MS);
-		uint8_t begin(Mode mode, uint8_t addr);											// Initialise the barometer specifying start mode and I2C addrss
-		uint8_t begin(uint8_t addr);																// Initialise the barometer specifying I2C address with default initialisation
 		uint8_t reset();																						// Soft reset the barometer		
 		void startNormalConversion();																// Start continuous measurement in NORMAL_MODE
 		void startForcedConversion();															  // Start a one shot measurement in FORCED_MODE
@@ -453,5 +414,10 @@ class BMP388_DEV : public Device {															// Derive the BMP388_DEV class 
 		const uint16_t FIFO_SIZE = 0x01FF;													// The BMP388 FIFO size 512 bytes
 		const uint8_t MAX_PACKET_SIZE = 7;													// The BMP388 maximum FIFO packet size in bytes
 		float sea_level_pressure = 1013.23f;												// Pressure at sea level
+		SPIClass* spi;
+		const int _cs;
+		void writeByte(uint8_t address, uint8_t data);
+		uint8_t readByte(uint8_t address);
+		void readBytes(uint8_t address, uint8_t* data, uint16_t count);
 };
 #endif

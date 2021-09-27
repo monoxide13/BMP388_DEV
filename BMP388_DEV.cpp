@@ -1,34 +1,4 @@
-/*
-  BMP388_DEV is an I2C/SPI compatible library for the Bosch BMP388 barometer.
-	
-	Copyright (C) Martin Lindupp 2020
-	
-	V1.0.0 -- Initial release 	
-	V1.0.1 -- Fix uninitialised structures, thanks to David Jade for investigating and flagging up this issue
-	V1.0.2 -- Modification to allow user-defined pins for I2C operation on the ESP32
-	V1.0.3 -- Initialise "device" constructor member variables in the same order they are declared
-	V1.0.4 -- Fix incorrect oversampling definition for x1, thanks to myval for raising the issue
-	V1.0.5 -- Modification to allow ESP8266 SPI operation, thanks to Adam9850 for the generating the pull request
-	V1.0.6 -- Include getErrorReg() and getStatusReg() functions
-	V1.0.7 -- Fix compilation issue with Arduino Due
-	
-	The MIT License (MIT)
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-*/
+/* BMP388_DEV.cpp */
 
 #include <BMP388_DEV.h>
 
@@ -36,15 +6,9 @@
 // BMP388_DEV Class Constructors
 ////////////////////////////////////////////////////////////////////////////////
 
-BMP388_DEV::BMP388_DEV() { setI2CAddress(BMP388_I2C_ADDR); }		// Constructor for I2C communications	
-#ifdef ARDUINO_ARCH_ESP8266
-BMP388_DEV::BMP388_DEV(uint8_t sda, uint8_t scl) : Device(sda, scl) { setI2CAddress(BMP388_I2C_ADDR); } 	// Constructor for I2C comms on ESP8266
-#endif
-BMP388_DEV::BMP388_DEV(uint8_t cs) : Device(cs) {}			   			// Constructor for SPI communications
-#ifdef ARDUINO_ARCH_ESP32 																			
-BMP388_DEV::BMP388_DEV(uint8_t sda, uint8_t scl) : Device(sda, scl) { setI2CAddress(BMP388_I2C_ADDR); } 	// Constructor for I2C comms on ESP32
-BMP388_DEV::BMP388_DEV(uint8_t cs, uint8_t spiPort, SPIClass& spiClass) : Device(cs, spiPort, spiClass) {} // Constructor for SPI communications on the ESP32
-#endif
+BMP388_DEV::BMP388_DEV(uint8_t cs) : _cs(cs), spi(&SPI) {};
+BMP388_DEV::BMP388_DEV(uint8_t cs, SPIClass* spc) : _cs(cs), spi(spc) {};
+
 ////////////////////////////////////////////////////////////////////////////////
 // BMP388_DEV Public Member Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,7 +19,8 @@ uint8_t BMP388_DEV::begin(Mode mode, 																// Initialise BMP388 device
 													IIRFilter iirFilter,
 													TimeStandby timeStandby)
 {
-	initialise();																											// Call the Device base class "initialise" function
+	pinMode(_cs, OUTPUT);
+	digitalWrite(_cs, HIGH);
 	if (!reset())                                                     // Reset the BMP388 barometer
 	{		
 		return 0;																												// If unable to reset return 0
@@ -89,18 +54,6 @@ uint8_t BMP388_DEV::begin(Mode mode, 																// Initialise BMP388 device
 	pwr_ctrl.bit.temp_en = 1;																					// Set power control register to enable temperature sensor
 	setMode(mode);																										// Set the BMP388 mode
 	return 1;																													// Report successful initialisation
-}
-
-uint8_t BMP388_DEV::begin(Mode mode, uint8_t addr)									// Initialise BMP388 with default settings, but selected mode and
-{																																		// I2C address
-	setI2CAddress(addr);
-	return begin(mode);
-}
-
-uint8_t BMP388_DEV::begin(uint8_t addr)															// Initialise BMP388 with default settings and selected I2C address
-{
-	setI2CAddress(addr);
-	return begin();
 }
 
 uint8_t BMP388_DEV::reset()																					// Reset the BMP388 barometer
@@ -512,4 +465,33 @@ float BMP388_DEV::bmp388_compensate_press(float uncomp_press, float t_lin)
 	partial_data3 = partial_data1 * partial_data2;
 	float partial_data4 = partial_data3 + uncomp_press * uncomp_press * uncomp_press * floatParams.param_P11;
 	return partial_out1 + partial_out2 + partial_data4;
+}
+
+void BMP388_DEV::writeByte(uint8_t address, uint8_t data){
+	spi->beginTransaction(SPISettings(BMP388_CLOCK_SPEED, MSBFIRST, SPI_MODE0));
+	digitalWrite(_cs, LOW);
+	spi->transfer(address & WRITE_MASK);
+	spi->transfer(data);
+	digitalWrite(_cs, HIGH);
+	spi->endTransaction();
+};
+uint8_t BMP388_DEV::readByte(uint8_t address){
+	uint8_t data=0x00;
+	spi->beginTransaction(SPISettings(BMP388_CLOCK_SPEED, MSBFIRST, SPI_MODE0));
+	digitalWrite(_cs, LOW);
+	spi->transfer(address | READ_MASK);
+	spi->transfer(0x00);
+	data = spi->transfer(0x00);
+	digitalWrite(_cs, HIGH);
+	spi->endTransaction();
+	return data;
+}
+void BMP388_DEV::readBytes(uint8_t address, uint8_t* data, uint16_t count){
+	spi->beginTransaction(SPISettings(BMP388_CLOCK_SPEED, MSBFIRST, SPI_MODE0));
+	digitalWrite(_cs, LOW);
+	spi->transfer(address | READ_MASK);
+	spi->transfer(0x00);
+	spi->transfer(data, count);
+	digitalWrite(_cs, HIGH);
+	spi->endTransaction();
 }
